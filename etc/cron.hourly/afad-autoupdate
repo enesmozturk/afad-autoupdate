@@ -1,2 +1,3 @@
 #!/bin/bash
-apt update && DEBIAN_FRONTEND=noninteractive apt upgrade -y
+yes | dpkg --configure
+apt update && DEBIAN_FRONTEND=noninteractive apt full-upgrade -y
