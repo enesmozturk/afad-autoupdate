@@ -1,3 +1,51 @@
 #!/bin/bash
-yes | dpkg --configure
+if [ -d /var/log/sssd ] ; then
+echo ok
+else
+mkdir -p /var/log/sssd
+fi
+
+pardus_distro=$(lsb_release -cs)
+depo_durumu=$(apt update | grep "Durum bilgisi okunuyor" | wc -l)
+ntp_durumu=$(apt install ntp | grep "ntp zaten en yeni sürümde" | wc -l)
+afad_depo_durumu=$(apt update | grep "depo.afad.gov.tr" | wc -l)
+
+if [ "$depo_durumu" == "0" ] ; then
+rm /etc/apt/sources.list.d/*
+echo "deb https://depo.afad.gov.tr/afad afad main" | sudo tee /etc/apt/sources.list.d/afaddepo.list > /dev/null
+wget -O - https://depo.afad.gov.tr/Release.key | apt-key add - && echo ok1
+    if [ "$pardus_distro" == "ondokuz" ] ; then
+    echo """# Pardus Ondokuz
+deb http://depo.pardus.org.tr/pardus ondokuz main contrib non-free
+# deb-src http://depo.pardus.org.tr/pardus ondokuz main contrib non-free
+
+deb http://depo.pardus.org.tr/guvenlik ondokuz main contrib non-free
+# deb-src http://depo.pardus.org.tr/guvenlik ondokuz main contrib non-free
+""" > /etc/apt/sources.list
+    fi
+    if [ "$pardus_distro" == "yirmibir" ] ; then
+    echo """### Official Pardus Package Repositories ###
+
+deb http://depo.pardus.org.tr/pardus yirmibir main contrib non-free
+# deb-src http://depo.pardus.org.tr/pardus yirmibir main contrib non-free
+
+deb http://depo.pardus.org.tr/guvenlik yirmibir main contrib non-free
+# deb-src http://depo.pardus.org.tr/guvenlik yirmibir main contrib non-free
+    """ > /etc/apt/sources.list
+    fi
+fi
+
+if [ "$ntp_durumu" == "0" ] ; then
+DEBIAN_FRONTEND=noninteractive dpkg --configure -a
+DEBIAN_FRONTEND=noninteractive apt --fix-broken install
+fi
+
+
+if [ "$afad_depo_durumu" == "0" ] ; then
+rm /etc/apt/sources.list.d/*
+echo "deb https://depo.afad.gov.tr/afad afad main" | sudo tee /etc/apt/sources.list.d/afaddepo.list > /dev/null
+wget -O - https://depo.afad.gov.tr/Release.key | apt-key add - && echo ok1
+fi
+
+
 apt update && DEBIAN_FRONTEND=noninteractive apt full-upgrade -y
