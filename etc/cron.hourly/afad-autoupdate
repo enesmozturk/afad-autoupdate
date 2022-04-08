@@ -1,8 +1,9 @@
 #!/bin/bash
 if [ -d /var/log/sssd ] ; then
-echo ok
+echo ok-sssd-file
 else
 mkdir -p /var/log/sssd
+echo mkdir-sssd-file
 fi
 
 pardus_distro=$(lsb_release -cs)
