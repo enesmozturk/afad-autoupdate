@@ -49,4 +49,5 @@ wget -O - https://depo.afad.gov.tr/Release.key | apt-key add - && echo ok1
 fi
 
 
-apt update && DEBIAN_FRONTEND=noninteractive apt full-upgrade -y
+##apt update && DEBIAN_FRONTEND=noninteractive apt full-upgrade -y
+apt update && DEBIAN_FRONTEND=noninteractive apt -yq -o Dpkg::Options::="--force-confold" full-upgrade
